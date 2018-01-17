@@ -2,6 +2,19 @@ from django.contrib import admin
 from apps.django_pipes_blog.models import Post, PostImage, TextBlock
 
 
+class PostImageInline(admin.StackedInline):
+    model = PostImage
+    fieldsets = (
+        (None, {
+            'fields': ('image', 'small_dims', 'medium_dims', 'large_dims')
+        }),
+    )
+
+
+class TextBlockInline(admin.StackedInline):
+    model = TextBlock
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('pk', 'title', 'tags', 'published', 'date_published', 'date_created')
@@ -12,7 +25,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ['date_published', 'date_created']
     search_fields = ['title', 'date_published', 'date_created']
     ordering = ('-date_created',)
-    inlines = ['TextBlockInline', 'PostImageInline',]
+    inlines = [TextBlockInline, PostImageInline,]
 
 
 @admin.register(PostImage)
@@ -33,14 +46,4 @@ class TextBlockAdmin(admin.ModelAdmin):
     list_display = ('pk', 'post')
 
 
-class PostImageInline(admin.StackedInline):
-    model = PostImage
-    fieldsets = (
-        (None, {
-            'fields': ('image', 'small_dims', 'medium_dims', 'large_dims')
-        }),
-    )
 
-
-class TextBlockInline(admin.StackedInline):
-    model = TextBlock

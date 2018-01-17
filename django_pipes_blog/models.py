@@ -1,9 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.timezone import now
 
 
 class Post(models.Model):
-    user = models.ForeignKey('User', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
     tags = models.TextField(blank=True, null=True)
     published = models.BooleanField(default=False)

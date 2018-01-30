@@ -22,12 +22,9 @@ class SinglePostView(DetailView):
     template_name = 'django_pipes_blog/post.html'
     context_object_name = 'post'
 
-    def get_context_data(self, *args, **kwargs):
-        print(args)
-        context = super().get_context_data(**kwargs)
-        print(context)
+    def get_context_data(self, **kwargs):
         print(kwargs)
-        print(self.request)
+        print(self.kwargs)
         if 'year' in kwargs.keys():
             year = kwargs['year'] 
             month = kwargs['month']

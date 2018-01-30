@@ -6,6 +6,7 @@ from django.utils.timezone import now
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
+    slug = models.SlugField(blank=True, null=True)
     tags = models.TextField(blank=True, null=True)
     published = models.BooleanField(default=False)
     date_published = models.DateTimeField(blank=True, null=True)
@@ -17,6 +18,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if self.published and not self.date_published:
             self.date_published = now()
+        self.slug = '_'.join(self.title.split(' '))
         super(Post, self).save(*args, **kwargs)
 
 
@@ -26,6 +28,7 @@ class TextBlock(models.Model):
     
     def __str__(self):
         return '%d_%d' %(self.pk, self.post.pk)
+
 
 class PostImage(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)

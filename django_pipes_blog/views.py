@@ -19,10 +19,15 @@ class IndexView(ListView):
 
 class SinglePostView(DetailView):
     model = Post
-    template = 'django_pipes_blog/post.html'
+    template_name = 'django_pipes_blog/post.html'
     context_object_name = 'post'
 
     def get_context_data(self, *args, **kwargs):
+        print(args)
+        context = super().get_context_data(**kwargs)
+        print(context)
+        print(kwargs)
+        print(self.request)
         if 'year' in kwargs.keys():
             year = kwargs['year'] 
             month = kwargs['month']
@@ -32,7 +37,10 @@ class SinglePostView(DetailView):
                 date_published__year=year,
                 date_published__month=month,
                 date_published__day=day,
-                title=title
+                slug=slug 
             )
-            if len(post) === 1:
+            if len(post) == 1:
                 return post
+        elif 'slug' in kwargs.keys():
+            post = Post.objects.get(slug=slug)
+            return post

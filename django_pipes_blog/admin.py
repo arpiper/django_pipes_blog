@@ -21,11 +21,12 @@ class TextBlockInline(admin.StackedInline):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'tags', 'published', 'date_published', 'date_created')
-    list_display_links = ('pk', 'title', 'date_created')
+    list_display = ('pk', 'title', 'slug', 'tags', 'published', 'date_published', 'date_created')
+    list_display_links = ('pk', 'title', 'slug', 'date_created')
     fieldsets = [
-        ("Blog Post", {'fields': ['title', 'user', 'tags']}),
+        ("Blog Post", {'fields': ['title', 'slug', 'user', 'tags', 'published']}),
     ]
+    readonly_fields = ('slug', 'date_published')
     list_filter = ['date_published', 'date_created']
     search_fields = ['title', 'date_published', 'date_created']
     ordering = ('-date_created',)

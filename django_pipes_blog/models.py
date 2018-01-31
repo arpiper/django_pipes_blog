@@ -24,6 +24,7 @@ class Post(models.Model):
 
 class TextBlock(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    block_title = models.CharField(max_length=512, blank=True, null=True)
     text = models.TextField()
     
     def __str__(self):

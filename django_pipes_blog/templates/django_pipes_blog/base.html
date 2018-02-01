@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <head>
-  </head>
+<head>
+</head>
 
-  <body>
-    <header>
-      <h3>hello</h3>
-    </header>
+<body>
+  <header>
+    <h3>hello</h3>
+  </header>
+  <div class="sidebar">
+    {% block sidebar %}
+      {% include "django_pipes_blog/sidebar.html" %}
+    {% endblock sidebar %}
+  </div>
   {% block content %}
   {% endblock content %}
-  </body>
+</body>
 
 </html>

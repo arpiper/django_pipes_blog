@@ -21,8 +21,8 @@ class TextBlockInline(admin.StackedInline):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'slug', 'tags', 'published', 'date_published', 'date_created')
-    list_display_links = ('pk', 'title', 'slug', 'date_created')
+    list_display = ('pk', 'title', 'user', 'tags', 'published', 'date_published', 'date_created')
+    list_display_links = ('pk', 'title')
     fieldsets = [
         ("Blog Post", {'fields': ['title', 'slug', 'user', 'tags', 'published']}),
     ]

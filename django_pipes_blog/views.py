@@ -14,11 +14,22 @@ class IndexView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self, *args, **kwargs):
-        posts = Post.objects.filter(
+        post_list = Post.objects.filter(
             published=True
         ).order_by(
             '-date_published'
         )
+        posts = []
+        for p in post_list:
+            posts.append({
+                'title': p.title,
+                'date_published': p.date_published,
+                'textblock_set': p.textblock_set.all(),
+                'year': p.date_published.year,
+                'month': p.date_published.strftime('%m'),
+                'day': p.date_published.day,
+                'slug': p.slug
+            })
         return posts
         
 
@@ -55,10 +66,19 @@ class NewPostView(CreateView):
     def get_context_data(self):
         context = super(NewPostView, self).get_context_data()
         context['formset'] = TextBlockFormSet(instance=self.object)
-        print(context)
+        context['username'] = self.request.user
         return context
 
-    
     def post(self, request):
-        print(self)
-        return render(self.request, self.template_name)
+        context = {}
+        form = PostForm(self.request.POST)
+        if form.is_valid():
+            context['form'] = form
+            post = form.save(commit=False)
+            post.user = request.user
+            post.save()
+            formset = TextBlockFormSet(self.request.POST, instance=post)
+            if formset.is_valid():
+                formset.save()
+            context['formset'] = formset
+        return render(self.request, self.template_name, context=context)

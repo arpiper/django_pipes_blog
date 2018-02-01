@@ -13,7 +13,9 @@ class Post(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s - %s' %(self.user.username, self.title)
+        if self.user:
+            return '%s - %s' %(self.user.username, self.title)
+        return self.title
 
     def save(self, *args, **kwargs):
         if self.published and not self.date_published:

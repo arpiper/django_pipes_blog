@@ -1,0 +1,7 @@
+{% extends "django_pipes_blog/base.html" %}
+
+{% block sidebar %}
+<div class="new-post">
+  <a href="{% url 'django_pipes_blog:new_post' %}">New Post</a>
+</div>
+{% endblock sidebar %}

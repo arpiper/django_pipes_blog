@@ -28,7 +28,7 @@ class IndexView(ListView):
                 'textblock_set': p.textblock_set.all(),
                 'year': p.date_published.year,
                 'month': p.date_published.strftime('%m'),
-                'day': p.date_published.day,
+                'day': p.date_published.strftime('%d'),
                 'slug': p.slug
             })
         return posts
@@ -106,16 +106,17 @@ class EditPostView(UpdateView):
         context['post_id'] = self.kwargs['pk']
         context['action'] = reverse('django_pipes_blog:edit_post', kwargs={'pk':self.kwargs['pk']}) 
         if self.request.POST:
-            context['formset'] = TextBlockFormSet(self.request.POST, instance=self.get_object())
+            context['formset'] = TextBlockFormSet(self.request.POST, instance=self.object)
         else:
-            context['formset'] = TextBlockFormSet(instance=self.get_object())
+            context['formset'] = TextBlockFormSet(instance=self.object)
         print(context)
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object(**kwargs)
         context = self.get_context_data(*args, **kwargs)
-        form = PostForm(self.request.POST)
+        #form = PostForm(self.request.POST)
+        form = context['form']
         print('post', context)
         if form.is_valid():
             p = form.save(commit=False)

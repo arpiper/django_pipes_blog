@@ -11,6 +11,6 @@ class PostForm(ModelForm):
 class TextBlockForm(ModelForm):
     class Meta:
         model = TextBlock
-        fields = ['text', 'block_title']
+        fields = ['block_title', 'text']
 
 TextBlockFormSet = inlineformset_factory(Post, TextBlock, form=TextBlockForm, extra=1)

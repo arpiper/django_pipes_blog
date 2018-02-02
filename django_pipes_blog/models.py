@@ -18,9 +18,10 @@ class Post(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        super(Post, self).save(*args, **kwargs)
         if self.published and not self.date_published:
             self.date_published = now()
-        self.slug = '_'.join(self.title.split(' '))
+        self.slug = '%s-%d' %('_'.join(self.title.split(' ')), self.pk)
         super(Post, self).save(*args, **kwargs)
 
 

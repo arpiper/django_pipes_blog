@@ -4,4 +4,9 @@
 <div class="new-post">
   <a href="{% url 'django_pipes_blog:new_post' %}">New Post</a>
 </div>
+{% if post_id %}
+<div class="preview-post">
+  <a href="{% url 'django_pipes_blog:edit_post' pk=post_id %}">Edit Post</a>
+</div>
+{% endif %}
 {% endblock sidebar %}

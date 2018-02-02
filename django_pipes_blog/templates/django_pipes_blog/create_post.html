@@ -1,9 +1,14 @@
 {% extends 'django_pipes_blog/base.html' %}
 
 {% block content %}
+{% if status %}
+<div class="message">
+  {{ status }}
+</div>
+{% endif %}
 <div class="new-post-form-container">
   <h2>New Post</h2>
-  <form action="{% url 'django_pipes_blog:new_post' %}" method="post" name="post">
+  <form action="{{ action }}" method="post" name="post">
     {% csrf_token %}
     <input name="username" value="{{ username }}" type="hidden">
     <ul>
@@ -15,4 +20,5 @@
     <button>submit</button>
   </form>
 </div>
+{{ post_form }}
 {% endblock content %}

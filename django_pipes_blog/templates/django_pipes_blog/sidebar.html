@@ -1,12 +1,19 @@
-{% extends "django_pipes_blog/base.html" %}
-
 {% block sidebar %}
+{% if user and not user.is_anonymous %}
 <div class="new-post">
   <a href="{% url 'django_pipes_blog:new_post' %}">New Post</a>
 </div>
-{% if post_id %}
+{% endif %}
+{% if post_id and user and user.id == post.user.id %}
 <div class="preview-post">
   <a href="{% url 'django_pipes_blog:edit_post' pk=post_id %}">Edit Post</a>
 </div>
 {% endif %}
+<div class="most-recent-posts">
+  {% for p in sidebar %}
+    <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
+      <span>{{ p.title }}</span>
+    </a>
+  {% endfor %}
+</div>
 {% endblock sidebar %}

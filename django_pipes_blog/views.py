@@ -4,6 +4,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Post, PostImage, TextBlock
 from .forms import PostForm, TextBlockFormSet
@@ -22,17 +23,23 @@ class IndexView(ListView):
         )
         posts = []
         for p in post_list:
-            posts.append({
+            post = {
                 'title': p.title,
                 'date_published': p.date_published,
                 'textblock_set': p.textblock_set.all(),
-                'year': p.date_published.year,
-                'month': p.date_published.strftime('%m'),
-                'day': p.date_published.strftime('%d'),
-                'slug': p.slug
-            })
+                'slug': p.slug,
+                'tags': p.tags.split(' '),
+            }
+            post.update(get_post_dates(p))
+            posts.append(post)
         return posts
-        
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(IndexView, self).get_context_data(*args, **kwargs)
+        context['user'] = self.request.user
+        context['sidebar'] = get_sidebar_post_links()
+        return context 
+   
 
 class SinglePostView(DetailView):
     model = Post
@@ -52,17 +59,17 @@ class SinglePostView(DetailView):
                 date_published__day=day,
                 slug=slug
             )
-            context['post'] = post
-            context['post_id'] = post.id
         elif 'slug' in self.kwargs.keys():
             post = Post.objects.get(slug=self.kwargs['slug'])
+        if post:
             context['post'] = post
             context['post_id'] = post.id
+            context['post_tags_array'] = post.tags.split(' ')
         return context
 
 
 @method_decorator(csrf_protect, name='dispatch')
-class NewPostView(CreateView):
+class NewPostView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'django_pipes_blog/create_post.html'
     fields = ['title', 'published', 'tags']
@@ -92,7 +99,8 @@ class NewPostView(CreateView):
         return render(self.request, self.template_name, context=context)
 
 
-class EditPostView(UpdateView):
+@method_decorator(csrf_protect, name='dispatch')
+class EditPostView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'django_pipes_blog/create_post.html'
@@ -115,14 +123,32 @@ class EditPostView(UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object(**kwargs)
         context = self.get_context_data(*args, **kwargs)
-        #form = PostForm(self.request.POST)
         form = context['form']
-        print('post', context)
         if form.is_valid():
             p = form.save(commit=False)
             if context['formset'].is_valid():
                 context['formset'].save()
                 p.save()
                 context['status'] = 'success'
-                #return render(self.request, self.template_name, context=context)
         return render(self.request, self.template_name, context=context)
+
+
+def get_post_dates(post):
+    return {
+        'year': post.date_published.year,
+        'month': post.date_published.strftime('%m'),
+        'day': post.date_published.strftime('%d'),
+    }
+
+
+def get_sidebar_post_links():
+    post_list = Post.objects.all().order_by('-date_published')[:5]
+    posts = []
+    for post in post_list:
+        p = {
+            'slug': post.slug,
+            'title': post.title,
+        }
+        p.update(get_post_dates(post))
+        posts.append(p)
+    return posts

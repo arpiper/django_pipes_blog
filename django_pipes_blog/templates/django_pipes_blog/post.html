@@ -1,13 +1,22 @@
 {% extends 'django_pipes_blog/base.html' %}
 
 {% block content %}
-<h2>{{ post.title }}</h2>
-<h5>{{ post.date_published }}</h5>
-{% for b in post.textblock_set.all %}
-  {% if b.block_title %}
-    <h4>{{ b.block_title }}</h4>
-  {% endif %}
-  {{ b.text }}
-{% endfor %}
+<div class="post-container">
+  <h2>{{ post.title }}</h2>
+  <h5>{{ post.date_published }}</h5>
+  {% for b in post.textblock_set.all %}
+    {% if b.block_title %}
+      <h4>{{ b.block_title }}</h4>
+    {% endif %}
+    <p>
+      {{ b.text }}
+    </p>
+  {% endfor %}
+  <div class="tags">
+    {% for t in post_tags_array %}
+      <span class="tag">{{ t }}</span>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock content %}

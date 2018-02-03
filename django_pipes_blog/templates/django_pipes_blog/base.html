@@ -5,9 +5,9 @@
 
 <body>
   <header>
-    <h3>hello</h3>
+    <a href="{% url 'django_pipes_blog:index' %}"><h2>hello</h2></a>
   </header>
-  <div class="sidebar">
+  <div class="sidebar left">
     {% block sidebar %}
       {% include "django_pipes_blog/sidebar.html" %}
     {% endblock sidebar %}

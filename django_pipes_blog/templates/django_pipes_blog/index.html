@@ -9,6 +9,11 @@
     </a>
     <h6 class="date-published">{{ post.date_published|date:"F d Y" }}</h6>
     <span class="text">{{ post.textblock_set.0.text|truncatechars:100 }}</span>
+    <div class="tags">
+      {% for t in post.tags %}
+        <span class="tag">{{ t }} </span>
+      {% endfor %}
+    </div>
   </div>
 {% endfor %}
 

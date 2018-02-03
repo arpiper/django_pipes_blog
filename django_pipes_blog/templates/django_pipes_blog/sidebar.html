@@ -10,9 +10,16 @@
 </div>
 {% endif %}
 <div class="most-recent-posts">
-  {% for p in sidebar %}
+  {% for p in sidebar_recent %}
     <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
       <span>{{ p.title }}</span>
+    </a>
+  {% endfor %}
+</div>
+<div class="monthly-links">
+  {% for k, p in sidebar_month_list.items %}
+    <a href="{% url 'django_pipes_blog:multi_post' year=p.year month=p.month %}">
+      <span>{{ k }}</span>
     </a>
   {% endfor %}
 </div>

@@ -6,6 +6,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+import calendar
+
 from .models import Post, PostImage, TextBlock
 from .forms import PostForm, TextBlockFormSet
 
@@ -21,23 +23,23 @@ class IndexView(ListView):
         ).order_by(
             '-date_published'
         )
-        posts = []
-        for p in post_list:
-            post = {
-                'title': p.title,
-                'date_published': p.date_published,
-                'textblock_set': p.textblock_set.all(),
-                'slug': p.slug,
-                'tags': p.tags.split(' '),
-            }
-            post.update(get_post_dates(p))
-            posts.append(post)
-        return posts
+        #posts = []
+        #for p in post_list:
+        #    post = {
+        #        'title': p.title,
+        #        'date_published': p.date_published,
+        #        'textblock_set': p.textblock_set.all(),
+        #        'slug': p.slug,
+        #        'tags': p.tags.split(' '),
+        #    }
+        #    post.update(get_post_dates(p))
+        #    posts.append(post)
+        return prepare_post_list(post_list)
 
     def get_context_data(self, *args, **kwargs):
         context = super(IndexView, self).get_context_data(*args, **kwargs)
         context['user'] = self.request.user
-        context['sidebar'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         return context 
    
 
@@ -65,6 +67,30 @@ class SinglePostView(DetailView):
             context['post'] = post
             context['post_id'] = post.id
             context['post_tags_array'] = post.tags.split(' ')
+        context['user'] = self.request.user
+        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        return context
+
+
+class MultiPostView(ListView):
+    model = Post
+    template_name = 'django_pipes_blog/multipost.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self, *args, **kwargs):
+        #posts = super(MultiPostView, self).get_queryset(*args, **kwargs)
+        posts = Post.objects.filter(
+            date_published__year=self.kwargs['year'], 
+            date_published__month=self.kwargs['month']
+        )
+        return prepare_post_list(posts)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(MultiPostView, self).get_context_data(*args, **kwargs)
+        context['user'] = self.request.user
+        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['month'] = calendar.month_name[int(self.kwargs['month'])]
+        context['year'] = self.kwargs['year']
         return context
 
 
@@ -142,13 +168,38 @@ def get_post_dates(post):
 
 
 def get_sidebar_post_links():
-    post_list = Post.objects.all().order_by('-date_published')[:5]
+    post_list = Post.objects.filter(published=True).order_by('-date_published')
     posts = []
-    for post in post_list:
+    for post in post_list[:5]:
         p = {
             'slug': post.slug,
             'title': post.title,
         }
         p.update(get_post_dates(post))
         posts.append(p)
+    month_list = {}
+    for post in post_list:
+        y = post.date_published.year
+        m = calendar.month_name[post.date_published.month]
+        if ('%s %s' %(m,y)) not in month_list.keys():
+            month_list[('%s %s' %(m, y))] = {
+                'year': y,
+                'month': post.date_published.strftime('%m')
+            }
+
+    return posts, month_list
+
+
+def prepare_post_list(post_list):
+    posts = []
+    for p in post_list:
+        post = {
+            'title': p.title,
+            'date_published': p.date_published,
+            'textblock_set': p.textblock_set.all(),
+            'slug': p.slug,
+            'tags': p.tags.split(' '),
+        }
+        post.update(get_post_dates(p))
+        posts.append(post)
     return posts

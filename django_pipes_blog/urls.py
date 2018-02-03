@@ -14,7 +14,7 @@ urlpatterns = [
         name='multi_post'
     ),
     path('<slug:slug>/', views.SinglePostView.as_view(), name='post_slug'),
-    path('new/', views.NewPostView.as_view(), name='new_post'),
-    path('<int:pk>/preview/', views.SinglePostView.as_view(), name='preview_post'),
-    path('<int:pk>/edit/', views.EditPostView.as_view(), name='edit_post'),
+    path('post/new/', views.NewPostView.as_view(), name='new_post'),
+    path('post/<int:pk>/preview/', views.SinglePostView.as_view(), name='preview_post'),
+    path('post/<int:pk>/edit/', views.EditPostView.as_view(), name='edit_post'),
 ]

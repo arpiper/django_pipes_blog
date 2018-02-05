@@ -45,6 +45,7 @@ header h1 {
 
 .content-container {
   grid-area: content;
+  padding: 10px;
 }
 
 .sidebar {

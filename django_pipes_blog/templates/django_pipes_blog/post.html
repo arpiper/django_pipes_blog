@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="post-container">
-  <h2>{{ post.title }}</h2>
-  <h5>{{ post.date_published }}</h5>
+  <h2 class="title">{{ post.title }}</h2>
+  <h4 class="date-published">{{ post.date_published }}</h4>
   {% for b in post.textblock_set.all %}
     {% if b.block_title %}
       <h4>{{ b.block_title }}</h4>
@@ -14,7 +14,9 @@
   {% endfor %}
   <div class="tags">
     {% for t in post_tags_array %}
-      <span class="tag">{{ t }}</span>
+      <a href="">
+        <span class="tag">{{ t }}</span>
+      </a>
     {% endfor %}
   </div>
 </div>

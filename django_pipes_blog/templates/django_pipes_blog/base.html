@@ -1,23 +1,50 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
-  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+  <meta name='description' content="">
+  <meta name="author" content="Andrew Piper">
+  <style>
+  :root {
+    --color-bg-main: #4caf50;
+    --color-main: #eee;
+    --color-dark: #424242;
+  }
+
+  </style>
   {% block page_title %}
   <title>Django Pipes Blog</title>
   {% endblock page_title %}
+
+  <link href="{% static '/django_pipes_blog/styles.css' %}" rel="stylesheet" media="all">
 </head>
 
 <body>
-  <header>
-    <a href="{% url 'django_pipes_blog:index' %}"><h2>hello</h2></a>
-  </header>
-  <div class="sidebar left">
-    {% block sidebar %}
-      {% include "django_pipes_blog/sidebar.html" %}
-    {% endblock sidebar %}
+  <div class="main-container">
+    <header>
+      <a href="{% url 'django_pipes_blog:index' %}">
+        <h1>Blog</h1>
+      </a>
+    </header>
+    <div class="sidebar right">
+      {% block sidebar %}
+        {% include "django_pipes_blog/sidebar.html" %}
+      {% endblock sidebar %}
+    </div>
+    <main class="content-container">
+      {% block content %}
+      {% endblock content %}
+    </main>
+    <footer>
+      <div>
+        <p>Footer</p>
+      </div>
+    </footer>
   </div>
-  {% block content %}
-  {% endblock content %}
 </body>
 
 </html>

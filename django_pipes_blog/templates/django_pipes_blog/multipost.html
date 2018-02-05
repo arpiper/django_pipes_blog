@@ -9,9 +9,11 @@
   <div class="posts-by-tag">
     <span>Posts tagged with:</span>
     <div class="tags">
-      <a href="{% url 'django_pipes_blog:tags' tag %}">
-        <span class="tag">{{ tag }}</span>
-      </a>
+      {% for t in tag %}
+        <a href="{% url 'django_pipes_blog:tags' t %}">
+          <span class="tag">{{ t }}</span>
+        </a>
+      {% endfor %}
     </div>
   </div>
 {% endif %}

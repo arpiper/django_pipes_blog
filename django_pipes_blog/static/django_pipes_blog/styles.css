@@ -104,6 +104,10 @@ a:visited {
   color: var(--color-main);
 }
 
+.posts-by-tag {
+  margin: 15px;
+}
+
 .tags {
   display: flex;
   align-items: center;

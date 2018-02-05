@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.decorators.csrf import csrf_protect
@@ -79,6 +80,28 @@ class MultiPostView(ListView):
         context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         context['month'] = calendar.month_name[int(self.kwargs['month'])]
         context['year'] = self.kwargs['year']
+        return context
+
+
+class SearchTagsView(ListView):
+    model = Post
+    template_name = 'django_pipes_blog/multipost.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self, *args, **kwargs):
+        tags = self.kwargs['tags'].split('&')
+        q = Q()
+        for tag in tags:
+            q |= Q(tags__icontains=tag)
+        post_list = Post.objects.filter(q)
+        print(post_list)
+        posts = prepare_post_list(post_list)
+        return posts
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(SearchTagsView, self).get_context_data(*args, **kwargs)
+        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['tag'] = self.kwargs['tags'].split('&')
         return context
 
 

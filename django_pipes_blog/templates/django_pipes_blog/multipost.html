@@ -5,16 +5,27 @@
 {% endblock page_title %}
 {% block content %}
 
+{% if tag %}
+  <div class="posts-by-tag">
+    <span>Posts tagged with:</span>
+    <div class="tags">
+      <a href="{% url 'django_pipes_blog:tags' tag %}">
+        <span class="tag">{{ tag }}</span>
+      </a>
+    </div>
+  </div>
+{% endif %}
+
 {% for post in posts %}
   <div class="blog-post">
     <a href="{% url 'django_pipes_blog:post' year=post.year month=post.month day=post.day slug=post.slug %}">
-      <h2 class="title">{{ post.title }}</h2>
+      <h3 class="title">{{ post.title }}</h3>
     </a>
-    <h4 class="date-published">{{ post.date_published|date:"F d Y" }}</h4>
+    <h5 class="date-published">{{ post.date_published|date:"F d Y" }}</h5>
     <span class="text">{{ post.textblock_set.0.text|truncatechars:100 }}</span>
     <div class="tags">
       {% for t in post.tags %}
-        <a href="">
+        <a href="{% url 'django_pipes_blog:tags' t %}">
           <span class="tag">{{ t }}</span>
         </a>
       {% endfor %}

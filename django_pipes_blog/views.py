@@ -14,7 +14,7 @@ from .forms import PostForm, TextBlockFormSet
 
 class IndexView(ListView):
     model = Post
-    template_name = 'django_pipes_blog/index.html'
+    template_name = 'django_pipes_blog/multipost.html'
     context_object_name = 'posts'
 
     def get_queryset(self, *args, **kwargs):
@@ -94,6 +94,7 @@ class NewPostView(LoginRequiredMixin, CreateView):
         context['formset'] = TextBlockFormSet(instance=self.object)
         context['username'] = self.request.user
         context['action'] = reverse('django_pipes_blog:new_post')
+        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         return context
 
     def post(self, request):
@@ -131,7 +132,7 @@ class EditPostView(LoginRequiredMixin, UpdateView):
             context['formset'] = TextBlockFormSet(self.request.POST, instance=self.object)
         else:
             context['formset'] = TextBlockFormSet(instance=self.object)
-        print(context)
+        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         return context
 
     def post(self, request, *args, **kwargs):

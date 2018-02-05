@@ -23,17 +23,6 @@ class IndexView(ListView):
         ).order_by(
             '-date_published'
         )
-        #posts = []
-        #for p in post_list:
-        #    post = {
-        #        'title': p.title,
-        #        'date_published': p.date_published,
-        #        'textblock_set': p.textblock_set.all(),
-        #        'slug': p.slug,
-        #        'tags': p.tags.split(' '),
-        #    }
-        #    post.update(get_post_dates(p))
-        #    posts.append(post)
         return prepare_post_list(post_list)
 
     def get_context_data(self, *args, **kwargs):
@@ -78,7 +67,6 @@ class MultiPostView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self, *args, **kwargs):
-        #posts = super(MultiPostView, self).get_queryset(*args, **kwargs)
         posts = Post.objects.filter(
             date_published__year=self.kwargs['year'], 
             date_published__month=self.kwargs['month']

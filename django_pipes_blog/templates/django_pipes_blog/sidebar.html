@@ -14,7 +14,7 @@
 </div>
 {% endif %}
 <div class="most-recent-posts">
-  <h4>Recent Post</h4>
+  <h4>Recent Posts</h4>
   {% for p in sidebar_recent %}
     <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
       <span>{{ p.title }}</span>

@@ -11,12 +11,22 @@
   <form action="{{ action }}" method="post" name="post">
     {% csrf_token %}
     <input name="username" value="{{ username }}" type="hidden">
-    <ul>
+    {% for field in form %}
+      <div class="field-wrapper">
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {% if field.help_text %}
+          <span class="help-text">{{ field.help_text|safe }}</span>
+        {% endif %}
+        {{ field }}
+      </div>
+    {% endfor %}
+    <!--ul>
       {{ form.as_ul }}
-    </ul>
-    <ul class="formset">
+    </ul-->
+    <!--ul class="formset">
       {{ formset.as_ul }}
-    </ul>
+    </ul-->
     <button>submit</button>
   </form>
 </div>

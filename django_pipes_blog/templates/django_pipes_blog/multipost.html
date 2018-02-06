@@ -24,6 +24,7 @@
       <h3 class="title">{{ post.title }}</h3>
     </a>
     <h5 class="date-published">{{ post.date_published|date:"F d Y" }}</h5>
+    <span class="text">{{ post.text|truncatechars:100 }}</span>
     <span class="text">{{ post.textblock_set.0.text|truncatechars:100 }}</span>
     <div class="tags">
       {% for t in post.tags %}

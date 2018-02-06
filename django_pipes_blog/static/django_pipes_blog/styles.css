@@ -160,8 +160,13 @@ form {
 
 form ul,
 form ul li {
-  width: 100%;
   list-style: none;
+}
+
+form div.field-wrapper,
+form ul,
+form ul li {
+  width: 100%;
   margin: 0;
   padding: 0;
 }
@@ -190,8 +195,13 @@ button {
   border: none;
   font-weight: bold;
   text-transform: uppercase;
+  margin-left: auto;
 }
 
 button:hover {
   cursor: pointer;
+}
+
+.field-wrapper .help-text {
+  font-size: 10pt;
 }

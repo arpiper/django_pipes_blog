@@ -109,12 +109,12 @@ class SearchTagsView(ListView):
 class NewPostView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'django_pipes_blog/create_post.html'
-    fields = ['title', 'published', 'tags']
+    form_class = PostForm
     context_object_name = 'post_form'
 
     def get_context_data(self):
         context = super(NewPostView, self).get_context_data()
-        context['formset'] = TextBlockFormSet(instance=self.object)
+        #context['formset'] = TextBlockFormSet(instance=self.object)
         context['username'] = self.request.user
         context['action'] = reverse('django_pipes_blog:new_post')
         context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
@@ -128,12 +128,12 @@ class NewPostView(LoginRequiredMixin, CreateView):
             post = form.save(commit=False)
             post.user = request.user
             post.save()
-            formset = TextBlockFormSet(self.request.POST, instance=post)
-            if formset.is_valid():
-                formset.save()
-            context['formset'] = formset
+            #formset = TextBlockFormSet(self.request.POST, instance=post)
+            #if formset.is_valid():
+            #    formset.save()
+            #context['formset'] = formset
             return redirect('django_pipes_blog:post_slug', slug=post.slug) 
-        context['formset'] = TextBlockFormSet(self.request.POST, errors='oops')
+        #context['formset'] = TextBlockFormSet(self.request.POST, errors='oops')
         return render(self.request, self.template_name, context=context)
 
 

@@ -11,6 +11,7 @@ class Post(models.Model):
     published = models.BooleanField(default=False)
     date_published = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(blank=True, null=True)
 
     def __str__(self):
         if self.user:
@@ -36,12 +37,12 @@ class TextBlock(models.Model):
 
 class PostImage(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="pipes_blog_images/")
-    small = models.ImageField(upload_to="pipes_blog_images/small/", null=True, blank=True)
+    image = models.ImageField(upload_to='pipes_blog_images/')
+    small = models.ImageField(upload_to='pipes_blog_images/small/', null=True, blank=True)
     small_dims = models.IntegerField(default=250)
-    medium = models.ImageField(upload_to="pipes_blog_images/medium/", blank=True, null=True)
+    medium = models.ImageField(upload_to='pipes_blog_images/medium/', blank=True, null=True)
     medium_dims = models.IntegerField(default=600)
-    large = models.ImageField(upload_to="pipes_blog_images/large/", blank=True, null=True)
+    large = models.ImageField(upload_to='pipes_blog_images/large/', blank=True, null=True)
     large_dims = models.IntegerField(default=900)
 
     def __str__(self):

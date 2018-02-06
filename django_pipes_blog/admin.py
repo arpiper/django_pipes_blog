@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from django.forms import Textarea
+from django.forms import Textarea, ModelForm
 from apps.django_pipes_blog.models import Post, PostImage, TextBlock
 
 
@@ -17,23 +17,34 @@ class PostImageInline(admin.StackedInline):
 class TextBlockInline(admin.StackedInline):
     model = TextBlock
     extra = 1
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'cols': 80, 'rows': 3})},
+    }
+
+
+class PostAdminForm(ModelForm):
+    class Meta:
+        model = Post
+        widgets = {
+            'tags': Textarea(attrs={'cols': 80, 'rows': 2}),
+            'text': Textarea(attrs={'cols': 80, 'rows': 20}),
+        }
+        fields = '__all__'
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'user', 'tags', 'published', 'date_published', 'date_created')
+    list_display = ('pk', 'title', 'user', 'published', 'date_published', 'date_created')
     list_display_links = ('pk', 'title')
-    fieldsets = [
-        ("Blog Post", {'fields': ['title', 'slug', 'user', 'tags', 'published']}),
-    ]
-    readonly_fields = ('slug', 'date_published')
     list_filter = ['date_published', 'date_created']
     search_fields = ['title', 'date_published', 'date_created']
     ordering = ('-date_created',)
+    readonly_fields = ('slug', 'date_published')
     inlines = [TextBlockInline, PostImageInline,]
-    formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'cols':35, 'rows': 3})},
-    }
+    fieldsets = [
+        ("Blog Post", {'fields': ['title', 'slug', 'user', 'tags', 'published', 'text']}),
+    ]
+    form = PostAdminForm
 
 
 @admin.register(PostImage)

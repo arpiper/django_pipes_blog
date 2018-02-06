@@ -4,6 +4,9 @@
 <div class="post-container">
   <h2 class="title">{{ post.title }}</h2>
   <h5 class="date-published">{{ post.date_published|date:'F d Y' }}</h5>
+  <div class="post-text">
+    <pre>{{ post.text }}</pre>
+  </div>
   {% for b in post.textblock_set.all %}
     {% if b.block_title %}
       <h4>{{ b.block_title }}</h4>

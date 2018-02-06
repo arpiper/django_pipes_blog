@@ -101,8 +101,13 @@ a:visited {
 }
 
 .new-post a span,
-.preview-post a span{
+.preview-post a span {
   color: var(--color-main);
+}
+
+.most-recent-posts a,
+.monthly-links a {
+  display: block;
 }
 
 .posts-by-tag {

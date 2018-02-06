@@ -3,7 +3,7 @@
 {% block content %}
 <div class="post-container">
   <h2 class="title">{{ post.title }}</h2>
-  <h4 class="date-published">{{ post.date_published }}</h4>
+  <h5 class="date-published">{{ post.date_published|date:'F d Y' }}</h5>
   {% for b in post.textblock_set.all %}
     {% if b.block_title %}
       <h4>{{ b.block_title }}</h4>
@@ -14,7 +14,7 @@
   {% endfor %}
   <div class="tags">
     {% for t in post_tags_array %}
-      <a href="">
+      <a href="{% url 'django_pipes_blog:tags' t %}">
         <span class="tag">{{ t }}</span>
       </a>
     {% endfor %}

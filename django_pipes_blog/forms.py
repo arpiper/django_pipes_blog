@@ -1,5 +1,5 @@
 from django.forms import ModelForm, inlineformset_factory, Textarea
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext_lazy as _
 
 from .models import Post, TextBlock, PostImage
 
@@ -12,7 +12,7 @@ class PostForm(ModelForm):
             'text': Textarea(attrs={'rows': 40, 'cols': 40}),
         }
         help_texts = {
-            'tags': gettext_lazy('Space seperated list of tags relevant to the post.'),
+            'tags': _('Space seperated list of tags relevant to the post.'),
         }
 
 
@@ -31,8 +31,13 @@ class ImageForm(ModelForm):
     class Meta:
         model = PostImage
         fields = ['image', 'small_dims', 'medium_dims', 'large_dims']
+        labels = {
+            'small_dims': _('Small'),
+            'medium_dims': _('Medium'),
+            'largs_dims': _('Large'),
+        }
         help_texts = {
-            'image': gettext_lazy('Image will be saved with multiple sizes based on the following dimensions:'),
+            'image': _('Image will be saved with multiple sizes based on the following dimensions:'),
         }
 
 

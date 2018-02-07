@@ -21,14 +21,10 @@
         {{ field }}
       </div>
     {% endfor %}
-    <!--ul>
-      {{ form.as_ul }}
-    </ul-->
-    <!--ul class="formset">
-      {{ formset.as_ul }}
-    </ul-->
+    <ul class="image-field-wrapper">
+      {{ imageset.as_ul }}
+    </ul>
     <button>submit</button>
   </form>
 </div>
-{{ post_form }}
 {% endblock content %}

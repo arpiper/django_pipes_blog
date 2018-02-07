@@ -26,4 +26,15 @@ class TextBlockForm(ModelForm):
         }
         '''
 
+
+class ImageForm(ModelForm):
+    class Meta:
+        model = PostImage
+        fields = ['image', 'small_dims', 'medium_dims', 'large_dims']
+        help_texts = {
+            'image': gettext_lazy('Image will be saved with multiple sizes based on the following dimensions:'),
+        }
+
+
 TextBlockFormSet = inlineformset_factory(Post, TextBlock, form=TextBlockForm, extra=1)
+ImageFormSet = inlineformset_factory(Post, PostImage, form=ImageForm, extra=1)

@@ -61,7 +61,7 @@ footer {
   grid-area: footer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 /*
@@ -164,11 +164,49 @@ form ul li {
 }
 
 form div.field-wrapper,
+form div.image-field-wrapper,
 form ul,
 form ul li {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.image-field-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.image-field-wrapper label,
+.image-field-wrapper input,
+.image-field-wrapper li {
+  width: auto;
+  display: inline;
+}
+
+.image-field-wrapper li:first-of-type {
+  width: 100%;
+}
+
+.image-field-wrapper li {
+  padding: 5px;
+}
+
+.image-field-wrapper input[type=number] {
+  width: 50px;
+}
+
+.field-wrapper .help-text,
+.image-field-wrapper .help-text,
+.image-field-wrapper .helptext {
+  font-size: 10pt;
+  display: block;
+}
+
+.image-field-wrapper .helptext {
+  padding-top: 5px;
 }
 
 label,
@@ -202,6 +240,3 @@ button:hover {
   cursor: pointer;
 }
 
-.field-wrapper .help-text {
-  font-size: 10pt;
-}

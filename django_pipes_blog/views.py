@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import calendar
 
 from .models import Post, PostImage, TextBlock
-from .forms import PostForm, TextBlockFormSet
+from .forms import PostForm, TextBlockFormSet, ImageFormSet
 
 
 class IndexView(ListView):
@@ -115,6 +115,7 @@ class NewPostView(LoginRequiredMixin, CreateView):
     def get_context_data(self):
         context = super(NewPostView, self).get_context_data()
         #context['formset'] = TextBlockFormSet(instance=self.object)
+        context['imageset'] = ImageFormSet(instance=self.object)
         context['username'] = self.request.user
         context['action'] = reverse('django_pipes_blog:new_post')
         context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
@@ -132,8 +133,13 @@ class NewPostView(LoginRequiredMixin, CreateView):
             #if formset.is_valid():
             #    formset.save()
             #context['formset'] = formset
+            imageset = ImageFormSet(self.request.POST, instance=post)
+            if imageset.is_valid():
+                imageset.save()
+            context['imageset'] = imageset
             return redirect('django_pipes_blog:post_slug', slug=post.slug) 
         #context['formset'] = TextBlockFormSet(self.request.POST, errors='oops')
+        context['imageset'] = ImageFormSet(self.request.POST)
         return render(self.request, self.template_name, context=context)
 
 

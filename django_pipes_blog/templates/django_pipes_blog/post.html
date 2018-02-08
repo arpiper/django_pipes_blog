@@ -4,6 +4,12 @@
 <div class="post-container">
   <h2 class="title">{{ post.title }}</h2>
   <h5 class="date-published">{{ post.date_published|date:'F d Y' }}</h5>
+  {% if post.postimage_set.all %}
+    <div class="post-image">
+      <img src="{{ post.postimage_set.all.0.medium.url }}">
+      <img src="{{ post.postimage_set.0.medium.url }}">
+    </div>
+  {% endif %}
   <div class="post-text">
     <pre>{{ post.text }}</pre>
   </div>

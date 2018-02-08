@@ -18,16 +18,23 @@
   </div>
 {% endif %}
 
-{% for post in posts %}
+{% for p in posts %}
   <div class="blog-post">
-    <a href="{% url 'django_pipes_blog:post' year=post.year month=post.month day=post.day slug=post.slug %}">
-      <h3 class="title">{{ post.title }}</h3>
-    </a>
-    <h5 class="date-published">{{ post.date_published|date:"F d Y" }}</h5>
-    <span class="text">{{ post.text|truncatechars:100 }}</span>
-    <span class="text">{{ post.textblock_set.0.text|truncatechars:100 }}</span>
+    <div class="post-content">
+      <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
+        <h3 class="title">{{ p.title }}</h3>
+      </a>
+      <h5 class="date-published">{{ p.date_published|date:"F d Y" }}</h5>
+      {% if p.images|length > 0 %}
+        <span class="post-image">
+          <img src="{{ p.images.0.small.url }}" >
+        </span>
+      {% endif %}
+      <span class="text">{{ p.text|truncatechars:100 }}</span>
+      <span class="text">{{ p.textblock_set.0.text|truncatechars:100 }}</span>
+    </div>
     <div class="tags">
-      {% for t in post.tags %}
+      {% for t in p.tags %}
         <a href="{% url 'django_pipes_blog:tags' t %}">
           <span class="tag">{{ t }}</span>
         </a>

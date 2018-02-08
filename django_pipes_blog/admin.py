@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea, ModelForm
+from django.utils.safestring import mark_safe
 from apps.django_pipes_blog.models import Post, PostImage, TextBlock
 
 
@@ -49,16 +50,25 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(PostImage)
 class PostImageAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'thumbnail', 'post')
-    list_display_links = ('pk', 'thumbnail',)
-    readonly_fields = ('small', 'medium', 'large')
+    list_display = ('pk', 'thumb', 'post')
+    list_display_links = ('pk', 'thumb',)
+    readonly_fields = ('small', 'medium', 'large', 'name', 'post', 'med')
 
-    def thumbnail(self, obj):
+    def thumb(self, obj):
         if obj.image:
-            return '<img src="%s" style="height:50px;width:auto;">' % (obj.img.url)
+            return mark_safe('<img src="%s" style="height:50px;width:auto;">' % obj.small.url)
         else:
             "no image"
-
+    thumb.allow_tags = True
+    def med(self, obj):
+        return mark_safe('<img src="%s" style="max-width:100%s;">' %(obj.medium.url, '%'))
+    med.allow_tags = True
+    med.short_description = 'Current Image'
+    fieldsets = [
+        ('Upload Image', {'fields': ['med', 'image']}),
+        ('Resizing Dimensions', {'fields': ['small_dims', 'medium_dims', 'large_dims']}),
+        ('Image Information', {'fields': ['post', 'name', 'small', 'medium', 'large']}),
+    ]
 
 @admin.register(TextBlock)
 class TextBlockAdmin(admin.ModelAdmin):

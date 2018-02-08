@@ -111,18 +111,24 @@ class NewPostView(LoginRequiredMixin, CreateView):
     template_name = 'django_pipes_blog/create_post.html'
     form_class = PostForm
     context_object_name = 'post_form'
+    
+    def get_object(self, **kwargs):
+        return Post.objects.get(pk=self.kwargs['pk'])
 
     def get_context_data(self):
         context = super(NewPostView, self).get_context_data()
-        #context['formset'] = TextBlockFormSet(instance=self.object)
-        context['imageset'] = ImageFormSet(instance=self.object)
-        context['username'] = self.request.user
         context['action'] = reverse('django_pipes_blog:new_post')
+        context['username'] = self.request.user
+        if self.request.POST:
+            context['imageset'] = ImageFormSet(self.request.POST, self.request.FILES, instance=self.object)
+        else:
+            context['imageset'] = ImageFormSet(instance=self.object)
         context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         return context
 
-    def post(self, request):
-        context = {}
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(**kwargs)
+        context = self.get_context_data(*args, **kwargs)
         form = PostForm(self.request.POST)
         if form.is_valid():
             context['form'] = form
@@ -133,13 +139,9 @@ class NewPostView(LoginRequiredMixin, CreateView):
             #if formset.is_valid():
             #    formset.save()
             #context['formset'] = formset
-            imageset = ImageFormSet(self.request.POST, instance=post)
-            if imageset.is_valid():
-                imageset.save()
-            context['imageset'] = imageset
+            if context['imageset'].is_valid():
+                context['imageset'].save()
             return redirect('django_pipes_blog:post_slug', slug=post.slug) 
-        #context['formset'] = TextBlockFormSet(self.request.POST, errors='oops')
-        context['imageset'] = ImageFormSet(self.request.POST)
         return render(self.request, self.template_name, context=context)
 
 
@@ -158,9 +160,11 @@ class EditPostView(LoginRequiredMixin, UpdateView):
         context['post_id'] = self.kwargs['pk']
         context['action'] = reverse('django_pipes_blog:edit_post', kwargs={'pk':self.kwargs['pk']}) 
         if self.request.POST:
-            context['formset'] = TextBlockFormSet(self.request.POST, instance=self.object)
+            #context['formset'] = TextBlockFormSet(self.request.POST, instance=self.object)
+            context['imageset'] = ImageFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
-            context['formset'] = TextBlockFormSet(instance=self.object)
+            #context['formset'] = TextBlockFormSet(instance=self.object)
+            context['imageset'] = ImageFormSet(instance=self.object)
         context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         return context
 
@@ -170,8 +174,14 @@ class EditPostView(LoginRequiredMixin, UpdateView):
         form = context['form']
         if form.is_valid():
             p = form.save(commit=False)
+            '''
             if context['formset'].is_valid():
                 context['formset'].save()
+                p.save()
+                context['status'] = 'success'
+            '''
+            if context['imageset'].is_valid():
+                context['imageset'].save()
                 p.save()
                 context['status'] = 'success'
         return render(self.request, self.template_name, context=context)
@@ -217,6 +227,8 @@ def prepare_post_list(post_list):
             'textblock_set': p.textblock_set.all(),
             'slug': p.slug,
             'tags': p.tags.split(' '),
+            'text': p.text,
+            'images': p.postimage_set.all(),
         }
         post.update(get_post_dates(p))
         posts.append(post)

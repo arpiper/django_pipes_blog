@@ -7,8 +7,12 @@
 </div>
 {% endif %}
 <div class="new-post-form-container">
-  <h2>New Post</h2>
-  <form action="{{ action }}" method="post" name="post">
+  {% if post_id %}
+    <h2>Editing Post: {{ post.title }}</h2>
+  {% else %}
+    <h2>New Post</h2>
+  {% endif %}
+  <form action="{{ action }}" method="post" name="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input name="username" value="{{ username }}" type="hidden">
     {% for field in form %}

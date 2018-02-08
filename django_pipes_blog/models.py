@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.core.files.base import ContentFile
 
+from PIL import Image as PIL_Image
+from io import BytesIO
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -37,6 +40,7 @@ class TextBlock(models.Model):
 
 class PostImage(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, null=True, blank=True)
     image = models.ImageField(upload_to='pipes_blog_images/')
     small = models.ImageField(upload_to='pipes_blog_images/small/', null=True, blank=True)
     small_dims = models.IntegerField(default=250)
@@ -84,27 +88,27 @@ class PostImage(models.Model):
         temp_handle.seek(0)
 
         # save the thumbnail to the thumbnail field.
-        #sub_name = str(size[0]) + 'x' + str(size[1])
-        name = "%s" %(self.img.name.split('/')[-1])
+        name = "%s" %(self.image.name.split('/')[-1])
         obj.save(name, ContentFile(temp_handle.read()), save=False)
         # delete the img. otherwise clutters the root folder.
         self.image.close()
 
     def save(self, *args, **kwargs):
-        super(Post_Image, self).save(*args, **kwargs)
+        super(PostImage, self).save(*args, **kwargs)
         # check if objects exists and main image hasnt changed.
         if self.pk is not None:
-            og = Post_Image.objects.get(pk=self.pk)
+            og = PostImage.objects.get(pk=self.pk)
             if not self.small or og.small != self.small:
-                self.create_resize(self.small_dims, self.small)
+                self.resize(self.small_dims, self.small)
             if not self.medium or og.medium != self.medium:
-                self.create_resize(self.medium_dims, self.medium)
+                self.resize(self.medium_dims, self.medium)
             if not self.large or og.large != og.large:
-                self.create_resize(self.large_dims, self.large)
+                self.resize(self.large_dims, self.large)
             if not self.name:
                 self.name = self.image.name.split('/')[-1].split('.')[0]
         else:
             if not self.name:
                 self.name = self.image.name.split('/')[-1].split('.')[0]
+        super(PostImage, self).save(*args, **kwargs)
 
 

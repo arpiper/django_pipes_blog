@@ -7,11 +7,10 @@
   {% if post.postimage_set.all %}
     <div class="post-image">
       <img src="{{ post.postimage_set.all.0.medium.url }}">
-      <img src="{{ post.postimage_set.0.medium.url }}">
     </div>
   {% endif %}
   <div class="post-text">
-    <pre>{{ post.text }}</pre>
+    <p>{{ post.text }}</p>
   </div>
   {% for b in post.textblock_set.all %}
     {% if b.block_title %}

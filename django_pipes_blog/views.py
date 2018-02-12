@@ -94,7 +94,6 @@ class SearchTagsView(ListView):
         for tag in tags:
             q |= Q(tags__icontains=tag)
         post_list = Post.objects.filter(q)
-        print(post_list)
         posts = prepare_post_list(post_list)
         return posts
 

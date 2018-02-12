@@ -26,9 +26,9 @@
       </a>
       <h5 class="date-published">{{ p.date_published|date:"F d Y" }}</h5>
       {% if p.images|length > 0 %}
-        <span class="post-image">
+        <div class="multi post-image">
           <img src="{{ p.images.0.small.url }}" >
-        </span>
+        </div>
       {% endif %}
       <span class="text">{{ p.text|truncatechars:100 }}</span>
       <span class="text">{{ p.textblock_set.0.text|truncatechars:100 }}</span>

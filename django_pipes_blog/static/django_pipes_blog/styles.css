@@ -148,6 +148,14 @@ a:visited {
   top: 0;
 }
 
+.post-image {
+  text-align: center;
+}
+
+.post-image.multi {
+  text-align: left;
+}
+
 /*
  * Form layout/styling
  */

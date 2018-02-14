@@ -118,26 +118,21 @@ class NewPostView(LoginRequiredMixin, CreateView):
         context = super(NewPostView, self).get_context_data()
         context['action'] = reverse('django_pipes_blog:new_post')
         context['username'] = self.request.user
-        if self.request.POST:
-            context['imageset'] = ImageFormSet(self.request.POST, self.request.FILES, instance=self.object)
-        else:
-            context['imageset'] = ImageFormSet(instance=self.object)
+        context['imageset'] = ImageFormSet()
         context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
         return context
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object(**kwargs)
-        context = self.get_context_data(*args, **kwargs)
+        context = {
+            'username': self.request.user,
+            'imageset': ImageFormSet(self.request.POST, self.request.FILES),
+        }
         form = PostForm(self.request.POST)
         if form.is_valid():
             context['form'] = form
             post = form.save(commit=False)
             post.user = request.user
             post.save()
-            #formset = TextBlockFormSet(self.request.POST, instance=post)
-            #if formset.is_valid():
-            #    formset.save()
-            #context['formset'] = formset
             if context['imageset'].is_valid():
                 context['imageset'].save()
             return redirect('django_pipes_blog:post_slug', slug=post.slug) 

@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 
 from PIL import Image as PIL_Image
 from io import BytesIO
+from urllib.parse import quote
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -25,7 +26,7 @@ class Post(models.Model):
         super(Post, self).save(*args, **kwargs)
         if self.published and not self.date_published:
             self.date_published = now()
-        self.slug = '%s-%d' %('_'.join(self.title.split(' ')), self.pk)
+        self.slug = quote('%s-%d' %('_'.join(self.title.split(' ')), self.pk))
         super(Post, self).save(*args, **kwargs)
 
 

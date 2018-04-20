@@ -7,6 +7,9 @@ from PIL import Image as PIL_Image
 from io import BytesIO
 from urllib.parse import quote
 
+from .utils import parseText 
+
+
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
@@ -16,6 +19,7 @@ class Post(models.Model):
     date_published = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     text = models.TextField(blank=True, null=True)
+    mdtext = models.TextField(blank=True, null=True)
 
     def __str__(self):
         if self.user:
@@ -26,8 +30,19 @@ class Post(models.Model):
         super(Post, self).save(*args, **kwargs)
         if self.published and not self.date_published:
             self.date_published = now()
-        self.slug = quote('%s-%d' %('_'.join(self.title.split(' ')), self.pk))
+        self.slug = quote('%s-%d' %('_'.join(self.title.split(' ')), self.pk))      
+        # format the text using markdown text formating
+        self.parseText()
+        print("save after parse", self.mdtext)
         super(Post, self).save(*args, **kwargs)
+
+    def parseText(self):
+        blocks = self.text.split('\n\n')
+        self.mdtext = ''
+        t = parseText(self.text)
+        self.mdtext += t
+        #self.save()
+
 
 
 class TextBlock(models.Model):
@@ -111,5 +126,3 @@ class PostImage(models.Model):
             if not self.name:
                 self.name = self.image.name.split('/')[-1].split('.')[0]
         super(PostImage, self).save(*args, **kwargs)
-
-

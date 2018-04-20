@@ -11,6 +11,7 @@ import calendar
 
 from .models import Post, PostImage, TextBlock
 from .forms import PostForm, TextBlockFormSet, ImageFormSet
+from .utils import getPostDates, preparePostList
 
 
 class IndexView(ListView):
@@ -24,12 +25,12 @@ class IndexView(ListView):
         ).order_by(
             '-date_published'
         )
-        return prepare_post_list(post_list)
+        return preparePostList(post_list)
 
     def get_context_data(self, *args, **kwargs):
         context = super(IndexView, self).get_context_data(*args, **kwargs)
         context['user'] = self.request.user
-        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         return context 
    
 
@@ -58,7 +59,7 @@ class SinglePostView(DetailView):
             context['post_id'] = post.id
             context['post_tags_array'] = post.tags.split(' ')
         context['user'] = self.request.user
-        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         return context
 
 
@@ -72,12 +73,12 @@ class MultiPostView(ListView):
             date_published__year=self.kwargs['year'], 
             date_published__month=self.kwargs['month']
         )
-        return prepare_post_list(posts)
+        return preparePostList(posts)
 
     def get_context_data(self, *args, **kwargs):
         context = super(MultiPostView, self).get_context_data(*args, **kwargs)
         context['user'] = self.request.user
-        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         context['month'] = calendar.month_name[int(self.kwargs['month'])]
         context['year'] = self.kwargs['year']
         return context
@@ -94,12 +95,12 @@ class SearchTagsView(ListView):
         for tag in tags:
             q |= Q(tags__icontains=tag)
         post_list = Post.objects.filter(q)
-        posts = prepare_post_list(post_list)
+        posts = preparePostList(post_list)
         return posts
 
     def get_context_data(self, *args, **kwargs):
         context = super(SearchTagsView, self).get_context_data(*args, **kwargs)
-        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         context['tag'] = self.kwargs['tags'].split('&')
         return context
 
@@ -119,7 +120,7 @@ class NewPostView(LoginRequiredMixin, CreateView):
         context['action'] = reverse('django_pipes_blog:new_post')
         context['username'] = self.request.user
         context['imageset'] = ImageFormSet()
-        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -154,12 +155,10 @@ class EditPostView(LoginRequiredMixin, UpdateView):
         context['post_id'] = self.kwargs['pk']
         context['action'] = reverse('django_pipes_blog:edit_post', kwargs={'pk':self.kwargs['pk']}) 
         if self.request.POST:
-            #context['formset'] = TextBlockFormSet(self.request.POST, instance=self.object)
             context['imageset'] = ImageFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
-            #context['formset'] = TextBlockFormSet(instance=self.object)
             context['imageset'] = ImageFormSet(instance=self.object)
-        context['sidebar_recent'], context['sidebar_month_list'] = get_sidebar_post_links()
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -168,28 +167,18 @@ class EditPostView(LoginRequiredMixin, UpdateView):
         form = context['form']
         if form.is_valid():
             p = form.save(commit=False)
-            '''
-            if context['formset'].is_valid():
-                context['formset'].save()
-                p.save()
-                context['status'] = 'success'
-            '''
             if context['imageset'].is_valid():
                 context['imageset'].save()
                 p.save()
-                context['status'] = 'success'
+                context['status'] = 'Post Successfully Updated'
+                # return the single post view
         return render(self.request, self.template_name, context=context)
 
 
-def get_post_dates(post):
-    return {
-        'year': post.date_published.year,
-        'month': post.date_published.strftime('%m'),
-        'day': post.date_published.strftime('%d'),
-    }
-
-
-def get_sidebar_post_links():
+##
+# Get list of most recent 5 posts and links for months containing posts for the sidebar.
+## 
+def getSidebarPostLinks():
     post_list = Post.objects.filter(published=True).order_by('-date_published')
     posts = []
     for post in post_list[:5]:
@@ -197,7 +186,7 @@ def get_sidebar_post_links():
             'slug': post.slug,
             'title': post.title,
         }
-        p.update(get_post_dates(post))
+        p.update(getPostDates(post))
         posts.append(p)
     month_list = {}
     for post in post_list:
@@ -208,22 +197,6 @@ def get_sidebar_post_links():
                 'year': y,
                 'month': post.date_published.strftime('%m')
             }
-
     return posts, month_list
 
 
-def prepare_post_list(post_list):
-    posts = []
-    for p in post_list:
-        post = {
-            'title': p.title,
-            'date_published': p.date_published,
-            'textblock_set': p.textblock_set.all(),
-            'slug': p.slug,
-            'tags': p.tags.split(' '),
-            'text': p.text,
-            'images': p.postimage_set.all(),
-        }
-        post.update(get_post_dates(p))
-        posts.append(post)
-    return posts

@@ -29,6 +29,7 @@ class PostAdminForm(ModelForm):
         widgets = {
             'tags': Textarea(attrs={'cols': 80, 'rows': 2}),
             'text': Textarea(attrs={'cols': 80, 'rows': 20}),
+            'mdtext': Textarea(attrs={'cols': 80, 'rows': 20}),
         }
         fields = '__all__'
 
@@ -40,10 +41,10 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ['date_published', 'date_created']
     search_fields = ['title', 'date_published', 'date_created']
     ordering = ('-date_created',)
-    readonly_fields = ('slug', 'date_published')
+    readonly_fields = ('slug', 'date_published', 'mdtext')
     inlines = [TextBlockInline, PostImageInline,]
     fieldsets = [
-        ("Blog Post", {'fields': ['title', 'slug', 'user', 'tags', 'published', 'text']}),
+        ("Blog Post", {'fields': ['title', 'slug', 'user', 'tags', 'published', 'text', 'mdtext']}),
     ]
     form = PostAdminForm
 

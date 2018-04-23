@@ -12,6 +12,9 @@
   <div class="post-text">
     <p>{{ post.text }}</p>
   </div>
+  <div class="post-text">
+    {{ post.mdtext | safe }}
+  </div>
   {% for b in post.textblock_set.all %}
     {% if b.block_title %}
       <h4>{{ b.block_title }}</h4>

@@ -33,7 +33,6 @@ class Post(models.Model):
         self.slug = quote('%s-%d' %('_'.join(self.title.split(' ')), self.pk))      
         # format the text using markdown text formating
         self.parseText()
-        print("save after parse", self.mdtext)
         super(Post, self).save(*args, **kwargs)
 
     def parseText(self):

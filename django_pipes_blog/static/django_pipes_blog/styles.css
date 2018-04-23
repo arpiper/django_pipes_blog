@@ -67,6 +67,14 @@ footer {
 /*
  * classes
  */
+.full-width,
+.new-post,
+.preview-post {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
 a,
 a:visited {
   color: var(--color-bg-main);
@@ -82,9 +90,9 @@ a:visited {
 
 .new-post,
 .preview-post {
-  display: flex;
+  /*display: flex;
+  align-items: center;*/
   justify-content: center;
-  align-items: center;
   margin: 5px 0;
 }
 

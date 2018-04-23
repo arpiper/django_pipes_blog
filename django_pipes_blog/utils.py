@@ -27,7 +27,7 @@ TAGS = [
     },
     {
         'raw': '##',
-        're': r'(?<!#)#{2}(?!#)',
+        're': '(?<!#)#{2}(?!#)',
         'name': 'H2',
         'tag': 'h2',
     },
@@ -88,37 +88,71 @@ TAGS = [
 ]
 HEADERS = ['######','#####','####','###','##','#',]
 WRAPPERS = ['**','__','*','_','[','(','```','`',]
+BLOCKTAGS = ['<h1>','<h2>','<h3>','<h4>','<h5>','<h6>']
 
 def parseText(text):
-    split = text.split()
-    new_text = []
+    #split = text.split()
+    #new_text = []
     formatted = text
-    matches = {}
+    #matches = {}
     for tag in TAGS:
-        #formatted = re.sub(pattern=tag['re'], repl=tag['tag'], string=formatted)
         indices = [m.start() for m in re.finditer(tag['re'], formatted)]
         if len(indices) > 0:
-            matches[tag['raw']] = tag
-            matches[tag['raw']]['indices'] = indices
+            #matches[tag['raw']] = tag
+            #matches[tag['raw']]['indices'] = indices
             if tag['raw'] in HEADERS:
                 for i in indices:
                     formatted = '{}<{}>{}'.format(formatted[:i], tag['tag'], formatted[i+len(tag['raw']):])
                     end = formatted[i:].find('\r\n')
-                    formatted = '{}</{}>{}'.format(formatted[:end+1], tag['tag'], formatted[end:])
+                    if end > -1:
+                        end += i
+                        formatted = '{}</{}>{}'.format(formatted[:end], tag['tag'], formatted[end+2:])
+                    else:
+                        end
+                        formatted = '{}</{}>'.format(formatted, tag['tag'])
             if tag['raw'] in WRAPPERS:
                 for idx,i in enumerate(indices):
                     adj = idx * ((len(tag['tag']) + 2) - len(tag['raw']))
-                    if idx % 2 == 1:
+                    if idx % 2 == 0:
                         formatted = '{}<{}>{}'.format(
                             formatted[:i+adj], tag['tag'], formatted[i+adj+len(tag['raw']):]
                         )
                     else:
                         formatted = '{}</{}>{}'.format(
-                            formatted[:i+adj+1], tag['tag'], formatted[i+adj:]
+                            formatted[:i+adj], tag['tag'], formatted[i+adj+len(tag['raw']):]
                         )
-
-
+    doublespace = formatted.split('\r\n\r\n')
+    temp = []
+    for paragraph in doublespace:
+        splits = splitHeaders(paragraph)
+        if len(splits) == 0:
+            temp.append('<p>{}</p>'.format(paragraph))
+        else:
+            temp.extend(splits)
+    formatted = ''.join(temp)
     return formatted
+
+
+def splitHeaders(text):
+    splits = []
+    if len(text) == 0:
+        return splits
+    # the text is too short to contain proper open/close header tags.
+    if len(text) < 9:
+        return ['<p>{}</p>'.format(text)]
+    for blocktag in BLOCKTAGS:
+        # the text value passed was the header tag line only.
+        if text[:4] == blocktag and text[-3:] == blocktag[-3:]:
+            return [text]
+        #wrap = wrap and (blocktag not in paragraph)
+        if blocktag in text:
+            i = text.find(blocktag)
+            start = splitHeaders(text[:i])
+            end = splitHeaders(text[i:])
+            splits.extend(start)
+            splits.extend(end)
+            return splits
+    return ['<p>{}</p>'.format(text)]
 
 
 ##

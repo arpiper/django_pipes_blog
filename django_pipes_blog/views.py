@@ -146,7 +146,7 @@ class NewPostView(LoginRequiredMixin, CreateView):
             post.save()
             if context['imageset'].is_valid():
                 context['imageset'].save()
-            if post.publishled:
+            if post.published:
                 return redirect('django_pipes_blog:post_slug', slug=post.slug) 
             return redirect('django_pipes_blog:edit_post', pk=post.pk)
         return render(self.request, self.template_name, context=context)

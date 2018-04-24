@@ -165,6 +165,13 @@ a:visited {
   text-align: left;
 }
 
+.message {
+  text-align: center;
+  background-color: var(--color-alert);
+  color: var(--color-main);
+  padding: 5px;
+}
+
 /*
  * Form layout/styling
  */

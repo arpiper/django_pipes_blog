@@ -25,8 +25,8 @@ urlpatterns = [
         views.MultiPostView.as_view(), 
         name='multi_post'
     ),
-    path('post/<slug:slug>/', views.SinglePostView.as_view(), name='post_slug'),
     path('post/new/', views.NewPostView.as_view(), name='new_post'),
+    path('post/<slug:slug>/', views.SinglePostView.as_view(), name='post_slug'),
     path('post/<int:pk>/preview/', views.SinglePostView.as_view(), name='preview_post'),
     path('post/<int:pk>/edit/', views.EditPostView.as_view(), name='edit_post'),
     path('tags/<str:tags>/', views.SearchTagsView.as_view(), name='tags'),

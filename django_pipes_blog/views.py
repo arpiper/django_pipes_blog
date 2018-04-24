@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.http import Http404
 from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -41,6 +42,7 @@ class SinglePostView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        post = None
         if 'year' in self.kwargs.keys():
             year = self.kwargs['year'] 
             month = self.kwargs['month']
@@ -50,10 +52,18 @@ class SinglePostView(DetailView):
                 date_published__year=year,
                 date_published__month=month,
                 date_published__day=day,
-                slug=slug
+                slug=slug,
+                published=True,
             )
         elif 'slug' in self.kwargs.keys():
-            post = Post.objects.get(slug=self.kwargs['slug'])
+            post = Post.objects.get(slug=self.kwargs['slug'], published=True)
+        elif 'pk' in self.kwargs:
+            post = Post.objects.get(
+                pk=self.kwargs['pk'],
+                user=self.request.user
+            )
+        else:
+            return Http404('This blog post hasn\'t been written yet')
         if post:
             context['post'] = post
             context['post_id'] = post.id
@@ -112,8 +122,8 @@ class NewPostView(LoginRequiredMixin, CreateView):
     form_class = PostForm
     context_object_name = 'post_form'
     
-    def get_object(self, **kwargs):
-        return Post.objects.get(pk=self.kwargs['pk'])
+    #def get_object(self, **kwargs):
+        #return Post.objects.get(pk=self.kwargs['pk'])
 
     def get_context_data(self):
         context = super(NewPostView, self).get_context_data()
@@ -136,7 +146,9 @@ class NewPostView(LoginRequiredMixin, CreateView):
             post.save()
             if context['imageset'].is_valid():
                 context['imageset'].save()
-            return redirect('django_pipes_blog:post_slug', slug=post.slug) 
+            if post.publishled:
+                return redirect('django_pipes_blog:post_slug', slug=post.slug) 
+            return redirect('django_pipes_blog:edit_post', pk=post.pk)
         return render(self.request, self.template_name, context=context)
 
 
@@ -172,6 +184,8 @@ class EditPostView(LoginRequiredMixin, UpdateView):
                 p.save()
                 context['status'] = 'Post Successfully Updated'
                 # return the single post view
+            if p.published:
+                return redirect('django_pipes_blog:post_slug', slug=p.slug)
         return render(self.request, self.template_name, context=context)
 
 

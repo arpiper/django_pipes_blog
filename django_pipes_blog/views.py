@@ -12,7 +12,7 @@ import calendar
 
 from .models import Post, PostImage, TextBlock
 from .forms import PostForm, TextBlockFormSet, ImageFormSet
-from .utils import getPostDates, preparePostList
+from .utils import getPostDates, preparePostList, parseText
 
 
 class IndexView(ListView):
@@ -143,6 +143,8 @@ class NewPostView(LoginRequiredMixin, CreateView):
             context['form'] = form
             post = form.save(commit=False)
             post.user = request.user
+            # parse the text for markdown style tags
+            post.mdtext = parseText(post.text)
             post.save()
             if context['imageset'].is_valid():
                 context['imageset'].save()
@@ -181,6 +183,8 @@ class EditPostView(LoginRequiredMixin, UpdateView):
             p = form.save(commit=False)
             if context['imageset'].is_valid():
                 context['imageset'].save()
+                # parse the text for markdown style tags
+                p.mdtext = parseText(p.text)
                 p.save()
                 context['status'] = 'Post Successfully Updated'
                 # return the single post view

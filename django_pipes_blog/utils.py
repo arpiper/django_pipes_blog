@@ -1,4 +1,5 @@
 import re
+from .models import PostImage
 
 TAGS = [
     {
@@ -66,12 +67,14 @@ TAGS = [
         're': '(?<!\[)\[{1}(?!\[)',
         'name': 'A',
         'tag': 'a',
+        'close': ')',
     },
     {
         'raw': '(',
         're': '(?<!\()\({1}(?!\()',
         'name': 'A',
         'tag': 'a',
+        'close': ']',
     },
     {
         'raw': '```',
@@ -84,10 +87,21 @@ TAGS = [
         're': '(?<!`)`{1}(?!`)',
         'name': 'CODE',
         'tag': 'code',
-    }
+    },
+    {
+        'raw': '{{',
+        're': '(?<!\{)\{{2}(?!\{)',
+        'name': 'IMG',
+        'tag': 'img',
+        'close': '}}'
+    },
 ]
+
+
 HEADERS = ['######','#####','####','###','##','#',]
-WRAPPERS = ['**','__','*','_','[','(','```','`',]
+INLINES = ['**','__','*','_','```','`',]
+LINKS = ['[', '(']
+IMAGES = ['{{']
 BLOCKTAGS = ['<h1>','<h2>','<h3>','<h4>','<h5>','<h6>']
 
 def parseText(text):
@@ -102,25 +116,18 @@ def parseText(text):
             #matches[tag['raw']]['indices'] = indices
             if tag['raw'] in HEADERS:
                 for i in indices:
-                    formatted = '{}<{}>{}'.format(formatted[:i], tag['tag'], formatted[i+len(tag['raw']):])
-                    end = formatted[i:].find('\r\n')
-                    if end > -1:
-                        end += i
-                        formatted = '{}</{}>{}'.format(formatted[:end], tag['tag'], formatted[end+2:])
-                    else:
-                        end
-                        formatted = '{}</{}>'.format(formatted, tag['tag'])
-            if tag['raw'] in WRAPPERS:
+                    formatted = insertHeader(tag, i, formatted)
+            if tag['raw'] in INLINES:
                 for idx,i in enumerate(indices):
-                    adj = idx * ((len(tag['tag']) + 2) - len(tag['raw']))
-                    if idx % 2 == 0:
-                        formatted = '{}<{}>{}'.format(
-                            formatted[:i+adj], tag['tag'], formatted[i+adj+len(tag['raw']):]
-                        )
-                    else:
-                        formatted = '{}</{}>{}'.format(
-                            formatted[:i+adj], tag['tag'], formatted[i+adj+len(tag['raw']):]
-                        )
+                    formatted = insertInlines(tag, i, formatted, idx)
+            if tag['raw'] in LINKS:
+                for i in indices:
+                    end = formatted[i:].find(tag['close']) + i + 1 # include the closing bracket
+                    formatted = insertLink(i, end, formatted)
+            if tag['raw'] in IMAGES:
+                for i in indices:
+                    formatted = insertImage(i, formatted)
+
     doublespace = formatted.split('\r\n\r\n')
     temp = []
     for paragraph in doublespace:
@@ -148,13 +155,45 @@ def splitHeaders(text):
         if blocktag in text:
             i = text.find(blocktag)
             start = splitHeaders(text[:i])
-            end = splitHeaders(text[i:])
-            splits.extend(start)
-            splits.extend(end)
+            i2 = text.find(blocktag[-3:], i+4) + 3
+            end = splitHeaders(text[i2:])
+            splits.extend(start + [text[i:i2]] + end)
             return splits
     return ['<p>{}</p>'.format(text)]
 
 
+def insertLink(start, end, text):
+    link = text[start+1:end-1]
+    link_text = link[:link.find(']')]
+    link_href = link[link.find('(')+1:]
+    l = '<a href="{}" target="_blank" rel="noopener">{}</a>'
+    l = l.format(link_href, link_text)
+    return '{}{}{}'.format(text[:start], l, text[end:])
+
+
+def insertHeader(tag, i, text):
+    # insert the opening tag adjusting for the markdown style tag removal
+    text = '{}<{}>{}'.format(text[:i], tag['tag'], text[i+len(tag['raw']):])
+    end = text[i:].find('\r\n')
+    if end > -1:
+        end += i
+        # insert closing tag adjusting to remove the carriage return/newline characters
+        return '{}</{}>{}'.format(text[:end], tag['tag'], text[end+2:])
+    return '{}</{}>'.format(text, tag['tag'])
+
+
+def insertInlines(tag, i, text, idx):
+    adj = idx * ((len(tag['tag']) + 2) - len(tag['raw']))
+    if idx % 2 == 0:
+        return '{}<{}>{}'.format(text[:i+adj], tag['tag'], text[i+adj+len(tag['raw']):])
+    return '{}</{}>{}'.format(text[:i+adj], tag['tag'], text[i+adj+len(tag['raw']):])
+
+
+def insertImage(i, formatted):
+    end = formatted.find('}}', i)
+    tag = formatted[i:end+2]
+    print(tag)
+    return formatted
 ##
 # return dictionary with the post date in form {year,month,day}
 ##

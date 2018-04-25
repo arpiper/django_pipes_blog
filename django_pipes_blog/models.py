@@ -7,8 +7,6 @@ from PIL import Image as PIL_Image
 from io import BytesIO
 from urllib.parse import quote
 
-from .utils import parseText 
-
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -31,17 +29,7 @@ class Post(models.Model):
         if self.published and not self.date_published:
             self.date_published = now()
         self.slug = quote('%s-%d' %('_'.join(self.title.split(' ')), self.pk))      
-        # format the text using markdown text formating
-        self.parseText()
         super(Post, self).save(*args, **kwargs)
-
-    def parseText(self):
-        blocks = self.text.split('\n\n')
-        self.mdtext = ''
-        t = parseText(self.text)
-        self.mdtext += t
-        #self.save()
-
 
 
 class TextBlock(models.Model):

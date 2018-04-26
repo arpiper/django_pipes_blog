@@ -143,8 +143,9 @@ class NewPostView(LoginRequiredMixin, CreateView):
             context['form'] = form
             post = form.save(commit=False)
             post.user = request.user
+            post.save() # save the post first to create an id and db entry for the parse func.
             # parse the text for markdown style tags
-            post.mdtext = parseText(post.text)
+            post.mdtext = parseText(post.text, p.id)
             post.save()
             if context['imageset'].is_valid():
                 context['imageset'].save()
@@ -183,8 +184,9 @@ class EditPostView(LoginRequiredMixin, UpdateView):
             p = form.save(commit=False)
             if context['imageset'].is_valid():
                 context['imageset'].save()
+                p.save()
                 # parse the text for markdown style tags
-                p.mdtext = parseText(p.text)
+                p.mdtext = parseText(p.text, p.id)
                 p.save()
                 context['status'] = 'Post Successfully Updated'
                 # return the single post view

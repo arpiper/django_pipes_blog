@@ -204,8 +204,7 @@ form ul li {
 }
 
 .image-field-wrapper label,
-.image-field-wrapper input,
-.image-field-wrapper li {
+.image-field-wrapper input {
   width: auto;
   display: inline;
 }
@@ -216,10 +215,32 @@ form ul li {
 
 .image-field-wrapper li {
   padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #aaa;
+}
+
+.image-field-wrapper li:last-of-type {
+  border-bottom: none;
 }
 
 .image-field-wrapper input[type=number] {
   width: 50px;
+}
+
+.image-field-wrapper .image-dims,
+.image-field-wrapper .image-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-field-wrapper .image-dims {
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.image-field-wrapper .image-input input {
+  margin-top: auto;
 }
 
 .field-wrapper .help-text,

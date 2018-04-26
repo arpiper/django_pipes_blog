@@ -37,7 +37,39 @@
       </div>
     {% endfor %}
     <ul class="image-field-wrapper">
+      {{ imageset.management_form }}
+      {% for image in imageset %}
+         <li>
+          <span class="image-input">
+            {{ image.image }}
+            <span class="help-text">
+              {{ image.image.help_text }}
+              <br />
+              Use the tag 
+              <b>{% templatetag openvariable %}image-{{forloop.counter0}} [position]{% templatetag closevariable %}</b>
+              to place and position the image in this post.
+            </span>
+          </span>
+          <span class="image-dims">
+            <label>
+              {{ image.small_dims.label }}
+              {{ image.small_dims }}
+            </label>
+            <label>
+              {{ image.medium_dims.label }}
+              {{ image.medium_dims }}
+            </label>
+            <label>
+              {{ image.large_dims.label }}
+              {{ image.large_dims }}
+            </label>
+            <label>{{ image.DELETE.label }}:{{ image.DELETE }}</label>
+          </span>
+         </li>
+      {% endfor %}
+      {% comment %}
       {{ imageset.as_ul }}
+      {% endcomment %}
     </ul>
     <button type="submit">Save</button>
   </form>

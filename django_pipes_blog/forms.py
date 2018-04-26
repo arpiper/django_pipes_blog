@@ -34,7 +34,7 @@ class ImageForm(ModelForm):
         labels = {
             'small_dims': _('Small'),
             'medium_dims': _('Medium'),
-            'largs_dims': _('Large'),
+            'large_dims': _('Large'),
         }
         help_texts = {
             'image': _('Image will be saved with multiple sizes based on the following dimensions:'),

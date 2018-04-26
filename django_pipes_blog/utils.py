@@ -1,5 +1,5 @@
 import re
-from .models import PostImage
+from .models import PostImage, Post
 
 TAGS = [
     {
@@ -104,7 +104,7 @@ LINKS = ['[', '(']
 IMAGES = ['{{']
 BLOCKTAGS = ['<h1>','<h2>','<h3>','<h4>','<h5>','<h6>']
 
-def parseText(text):
+def parseText(text, postid):
     #split = text.split()
     #new_text = []
     formatted = text
@@ -126,8 +126,7 @@ def parseText(text):
                     formatted = insertLink(i, end, formatted)
             if tag['raw'] in IMAGES:
                 for i in indices:
-                    formatted = insertImage(i, formatted)
-
+                    formatted = insertImage(i, formatted, postid)
     doublespace = formatted.split('\r\n\r\n')
     temp = []
     for paragraph in doublespace:
@@ -189,11 +188,25 @@ def insertInlines(tag, i, text, idx):
     return '{}</{}>{}'.format(text[:i+adj], tag['tag'], text[i+adj+len(tag['raw']):])
 
 
-def insertImage(i, formatted):
+def insertImage(i, formatted, postid):
+    images = Post.objects.get(pk=postid).postimage_set.all()
     end = formatted.find('}}', i)
-    tag = formatted[i:end+2]
-    print(tag)
-    return formatted
+    tag = formatted[i+2:end].split(' ')
+    img = None
+    tagid = tag[0].split('-')[1] 
+    img_class = 'left' if len(tag) <= 1 else tag[1]
+    for idx,img in enumerate(images):
+        if idx == tagid:
+            img = image
+    if img:
+        s = '<img src="{}" alt="{}" class="{}">'.format(
+            img.medium.url,
+            img.name,
+            img_class
+        )
+    return '{}{}{}'.format(formatted[:i], s, formatted[end+2:])
+
+
 ##
 # return dictionary with the post date in form {year,month,day}
 ##

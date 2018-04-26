@@ -126,7 +126,7 @@ class AllPosts(LoginRequiredMixin, ListView):
     def get_queryset(self):
         posts = Post.objects.filter(
             user=self.request.user,
-            published=True
+            published=False
         ).order_by(
             '-date_created'
         )

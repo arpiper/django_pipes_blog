@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 
 import calendar
 
@@ -82,6 +83,8 @@ class MultiPostView(ListView):
         posts = Post.objects.filter(
             date_published__year=self.kwargs['year'], 
             date_published__month=self.kwargs['month']
+        ).order_by(
+            '-date_published'
         )
         return preparePostList(posts)
 
@@ -112,6 +115,27 @@ class SearchTagsView(ListView):
         context = super(SearchTagsView, self).get_context_data(*args, **kwargs)
         context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         context['tag'] = self.kwargs['tags'].split('&')
+        return context
+
+
+class AllPosts(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'django_pipes_blog/multipost.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        posts = Post.objects.filter(
+            user=self.request.user,
+            published=True
+        ).order_by(
+            '-date_created'
+        )
+        return preparePostList(posts)
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['user'] = self.request.user
+        context['sidebar_recent'], context['sidebar_month_list'] = getSidebarPostLinks()
         return context
 
 

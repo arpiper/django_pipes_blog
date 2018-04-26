@@ -225,7 +225,9 @@ def preparePostList(post_list):
     posts = []
     for p in post_list:
         post = {
+            'id': p.id,
             'title': p.title,
+            'published': p.published,
             'date_published': p.date_published,
             'textblock_set': p.textblock_set.all(),
             'slug': p.slug,

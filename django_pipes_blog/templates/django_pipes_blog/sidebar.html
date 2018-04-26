@@ -1,5 +1,10 @@
 {% block sidebar %}
 {% if user and not user.is_anonymous %}
+<div class="">
+  <a href="{% url 'django_pipes_blog:unpublished' user.id %}">
+    Unpublished posts
+  </a>
+</div>
 <div class="new-post">
   <a href="{% url 'django_pipes_blog:new_post' %}">
     <span>New Post</span>

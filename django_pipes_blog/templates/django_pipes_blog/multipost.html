@@ -21,10 +21,21 @@
 {% for p in posts %}
   <div class="blog-post">
     <div class="post-content">
-      <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
-        <h3 class="title">{{ p.title }}</h3>
-      </a>
-      <h5 class="date-published">{{ p.date_published|date:"F d Y" }}</h5>
+      {% if p.published %}
+        <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
+          <h3 class="title">{{ p.title }}</h3>
+        </a>
+      {% else %}
+        <a href="{% url 'django_pipes_blog:edit_post' pk=p.id %}">
+          <h3 class="title">{{ p.title }}</h3>
+        </a>
+        <a href="{% url 'django_pipes_blog:preview' pk=p.id %}">Preview</a>
+      {% endif %}
+      {% if p.published %}
+        <h5 class="date-published">{{ p.date_published|date:"F d Y" }}</h5>
+      {% else %}
+        <h5 class="date-created">Created: {{ p.date_created|date:"F d Y" }}</h5>
+      {% endif %}
       {% if p.images|length > 0 %}
         <div class="multi post-image">
           <img src="{{ p.images.0.small.url }}" >

@@ -30,4 +30,6 @@ urlpatterns = [
     path('post/<int:pk>/preview/', views.SinglePostView.as_view(), name='preview_post'),
     path('post/<int:pk>/edit/', views.EditPostView.as_view(), name='edit_post'),
     path('tags/<str:tags>/', views.SearchTagsView.as_view(), name='tags'),
+    path('post/<int:pk>/unpublished/', views.AllPosts.as_view(), name='unpublished'),
+    path('post/<int:pk>/<str:all="all">/', views.AllPosts.as_view(), name='all_posts'),
 ]

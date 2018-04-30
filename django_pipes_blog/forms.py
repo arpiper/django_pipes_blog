@@ -37,7 +37,8 @@ class ImageForm(ModelForm):
             'large_dims': _('Large'),
         }
         help_texts = {
-            'image': _('Image will be saved with multiple sizes based on the following dimensions:'),
+            'image': _('Use the tag {{image-[number] [position]}} to place the image in the post. \
+                Image will be saved with multiple sizes based on the following dimensions:'),
         }
 
 

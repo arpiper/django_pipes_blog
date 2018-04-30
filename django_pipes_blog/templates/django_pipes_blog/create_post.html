@@ -37,10 +37,12 @@
       </div>
     {% endfor %}
     <ul class="image-field-wrapper">
+      {% comment %}
       {{ imageset.management_form }}
       {% for image in imageset %}
          <li>
           <span class="image-input">
+            {{ image.errors }}
             {{ image.image }}
             <span class="help-text">
               {{ image.image.help_text }}
@@ -67,9 +69,8 @@
           </span>
          </li>
       {% endfor %}
-      {% comment %}
-      {{ imageset.as_ul }}
       {% endcomment %}
+      {{ imageset.as_ul }}
     </ul>
     <button type="submit">Save</button>
   </form>

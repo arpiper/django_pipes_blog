@@ -3,6 +3,7 @@
 {% block page_title %}
 <title>{{ month }} {{ year }} - Django Pipes Blog</title>
 {% endblock page_title %}
+
 {% block content %}
 
 {% if tag %}
@@ -22,14 +23,16 @@
   <div class="blog-post">
     <div class="post-content">
       {% if p.published %}
-        <a href="{% url 'django_pipes_blog:post' year=p.year month=p.month day=p.day slug=p.slug %}">
+        {% with d=p.date_published %}
+        <a href="{% url 'django_pipes_blog:post' year=d.year month=d.month day=d.day slug=p.slug %}">
           <h3 class="title">{{ p.title }}</h3>
         </a>
+        {% endwith %}
       {% else %}
         <a href="{% url 'django_pipes_blog:edit_post' pk=p.id %}">
           <h3 class="title">{{ p.title }}</h3>
         </a>
-        <a href="{% url 'django_pipes_blog:preview' pk=p.id %}">Preview</a>
+        <a class="preview" href="{% url 'django_pipes_blog:preview_post' pk=p.id %}">Preview</a>
       {% endif %}
       {% if p.published %}
         <h5 class="date-published">{{ p.date_published|date:"F d Y" }}</h5>
@@ -54,4 +57,16 @@
   </div>
 {% endfor %}
 
+<div class="pagination">
+  {% if posts.has_previous %}
+  <span class="previous">
+    <a href="?page={{ posts.previous_page_number }}">Previous</a>
+  </span>
+  {% endif %}
+  {% if posts.has_next %}
+  <span class="next">
+    <a href="?page={{ posts.next_page_number }}">Next</a>
+  </span>
+  {% endif %}
+</div>
 {% endblock content %}

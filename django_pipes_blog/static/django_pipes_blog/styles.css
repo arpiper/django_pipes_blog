@@ -58,6 +58,7 @@ header h1 {
 }
 
 footer {
+  border-top: 1px solid var(--color-dark);
   grid-area: footer;
   display: flex;
   align-items: center;
@@ -119,6 +120,10 @@ a:visited {
   display: block;
 }
 
+.blog-post {
+  border-bottom: 1px solid var(--color-main);
+}
+
 .posts-by-tag {
   margin: 15px;
 }
@@ -170,6 +175,17 @@ a:visited {
   background-color: var(--color-alert);
   color: var(--color-main);
   padding: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10pt;
+  padding: 5px;
+}
+.pagination .next {
+  margin-left: auto;
 }
 
 /*

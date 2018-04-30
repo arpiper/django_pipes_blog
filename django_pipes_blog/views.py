@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 
 import calendar
 
@@ -86,7 +87,9 @@ class MultiPostView(ListView):
         ).order_by(
             '-date_published'
         )
-        return preparePostList(posts)
+        page = Paginator(posts, 10)
+        preparePostList(posts)
+        return posts
 
     def get_context_data(self, *args, **kwargs):
         context = super(MultiPostView, self).get_context_data(*args, **kwargs)
@@ -123,14 +126,25 @@ class AllPosts(LoginRequiredMixin, ListView):
     template_name = 'django_pipes_blog/multipost.html'
     context_object_name = 'posts'
 
-    def get_queryset(self):
-        posts = Post.objects.filter(
-            user=self.request.user,
-            published=False
-        ).order_by(
-            '-date_created'
-        )
-        return preparePostList(posts)
+    def get_queryset(self, *args, **kwargs):
+        if 'all' in self.kwargs.keys():
+            posts = Post.objects.filter(
+                user=self.request.user
+            ).order_by(
+                '-date_created'
+            )
+        else:
+            posts = Post.objects.filter(
+                user=self.request.user,
+                published=False
+            ).order_by(
+                '-date_created'
+            )
+        pages = Paginator(posts, 10)
+        page = self.request.GET.get('page') if self.request.GET.get('page') else 1
+        p = pages.get_page(page)
+        preparePostList(p)
+        return p
 
     def get_context_data(self):
         context = super().get_context_data()

@@ -228,13 +228,16 @@ def preparePostList(post_list):
             'id': p.id,
             'title': p.title,
             'published': p.published,
-            'date_published': p.date_published,
+            'date_created': p.date_created,
             'textblock_set': p.textblock_set.all(),
             'slug': p.slug,
             'tags': p.tags.split(' '),
             'text': p.text,
             'images': p.postimage_set.all(),
         }
-        post.update(getPostDates(p))
+        p.tags = p.tags.split(' ')
+        if p.published:
+            post['date_published'] = p.date_published
+            post.update(getPostDates(p))
         posts.append(post)
     return posts

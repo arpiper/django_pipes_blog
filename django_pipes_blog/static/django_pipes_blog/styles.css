@@ -45,7 +45,7 @@ header h1 {
 
 .content-container {
   grid-area: content;
-  padding: 10px;
+  padding: 10px 20px;
 }
 
 .sidebar {
@@ -162,6 +162,36 @@ a:visited {
   top: 0;
 }
 
+.post-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-text p {
+  text-align: justify;
+}
+
+.post-text img {
+  padding: 10px;
+}
+
+.post-text .left {
+  float: left;
+  padding-left: 5px;
+  padding-right: 20px;
+}
+
+.post-text .right {
+  float: right;
+  padding-right: 5px;
+  padding-left: 20px;
+}
+
+.post-text .center {
+  display: block;
+  margin: 0 auto;
+}
+
 .post-image {
   text-align: center;
 }
@@ -184,8 +214,15 @@ a:visited {
   font-size: 10pt;
   padding: 5px;
 }
+
 .pagination .next {
   margin-left: auto;
+}
+
+.clearfix:after {
+  content: '';
+  clear: both;
+  display: table;
 }
 
 /*

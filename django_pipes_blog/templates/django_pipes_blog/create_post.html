@@ -37,40 +37,39 @@
       </div>
     {% endfor %}
     <ul class="image-field-wrapper">
-      {% comment %}
       {{ imageset.management_form }}
-      {% for image in imageset %}
-         <li>
-          <span class="image-input">
-            {{ image.errors }}
-            {{ image.image }}
-            <span class="help-text">
-              {{ image.image.help_text }}
-              <br />
-              Use the tag 
-              <b>{% templatetag openvariable %}image-{{forloop.counter0}} [position]{% templatetag closevariable %}</b>
-              to place and position the image in this post.
-            </span>
+      {% for imageform in imageset.forms %}
+      <li>
+        <span class="image-input">
+          {{ imageform.errors }}
+          {{ imageform.image.errors }}
+          {{ imageform.image }}
+          <span class="help-text">
+            {{ imageform.image.help_text }}
           </span>
-          <span class="image-dims">
-            <label>
-              {{ image.small_dims.label }}
-              {{ image.small_dims }}
-            </label>
-            <label>
-              {{ image.medium_dims.label }}
-              {{ image.medium_dims }}
-            </label>
-            <label>
-              {{ image.large_dims.label }}
-              {{ image.large_dims }}
-            </label>
-            <label>{{ image.DELETE.label }}:{{ image.DELETE }}</label>
+        </span>
+        <span class="image-dims">
+          <span class="full-width">
+            {{ imageform.small_dims.label_tag }}
+            {{ imageform.small_dims }}
           </span>
-         </li>
+          <span class="full-width">
+            {{ imageform.medium_dims.label_tag }}
+            {{ imageform.medium_dims }}
+          </span>
+          <span class="full-width">
+            {{ imageform.large_dims.label_tag }}
+            {{ imageform.large_dims }}
+          </span>
+          <span class="full-width">
+            {{ imageform.DELETE.label_tag }}
+            {{ imageform.DELETE }}
+          </span>
+        </span>
+        {{ imageform.post }}
+        {{ imageform.id }}
+      </li>
       {% endfor %}
-      {% endcomment %}
-      {{ imageset.as_ul }}
     </ul>
     <button type="submit">Save</button>
   </form>

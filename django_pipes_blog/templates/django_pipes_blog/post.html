@@ -4,14 +4,6 @@
 <div class="post-container">
   <h2 class="title">{{ post.title }}</h2>
   <h5 class="date-published">{{ post.date_published|date:'F d Y' }}</h5>
-  {% if post.postimage_set.all %}
-    <div class="post-image">
-      <img src="{{ post.postimage_set.all.0.medium.url }}">
-    </div>
-  {% endif %}
-  <div class="post-text">
-    <p>{{ post.text }}</p>
-  </div>
   <div class="post-text">
     {{ post.mdtext | safe }}
   </div>

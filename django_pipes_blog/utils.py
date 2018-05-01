@@ -105,15 +105,10 @@ IMAGES = ['{{']
 BLOCKTAGS = ['<h1>','<h2>','<h3>','<h4>','<h5>','<h6>']
 
 def parseText(text, postid):
-    #split = text.split()
-    #new_text = []
     formatted = text
-    #matches = {}
     for tag in TAGS:
         indices = [m.start() for m in re.finditer(tag['re'], formatted)]
         if len(indices) > 0:
-            #matches[tag['raw']] = tag
-            #matches[tag['raw']]['indices'] = indices
             if tag['raw'] in HEADERS:
                 for i in indices:
                     formatted = insertHeader(tag, i, formatted)
@@ -145,7 +140,7 @@ def splitHeaders(text):
         return splits
     # the text is too short to contain proper open/close header tags.
     if len(text) < 9:
-        return ['<p>{}</p>'.format(text)]
+        return ['<p class="clearfix">{}</p>'.format(text)]
     for blocktag in BLOCKTAGS:
         # the text value passed was the header tag line only.
         if text[:4] == blocktag and text[-3:] == blocktag[-3:]:
@@ -158,7 +153,7 @@ def splitHeaders(text):
             end = splitHeaders(text[i2:])
             splits.extend(start + [text[i:i2]] + end)
             return splits
-    return ['<p>{}</p>'.format(text)]
+    return ['<p class="clearfix">{}</p>'.format(text)]
 
 
 def insertLink(start, end, text):
@@ -200,7 +195,7 @@ def insertImage(i, formatted, postid):
             img = image
     if img:
         s = '<img src="{}" alt="{}" class="{}">'.format(
-            img.medium.url,
+            img.small.url,
             img.name,
             img_class
         )
